@@ -14,25 +14,29 @@ chat_id = bot.getUpdates()[-1].message.chat.id
 # 파일의 위치
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
-server_link = 'https://finance.naver.com/'
+server_link = 'https://www.uplus.co.kr/css/chgi/chgi/RetrieveTvContentsMFamily.hpi'
 
 
 #req.encoding = 'utf-8' # Clien에서 encoding 정보를 보내주지 않아 encoding옵션을 추가해줘야합니다.
-
+#CHANNEL > div.contGroup.channel_schedules_new.hidden-xs > div > ul
+#CHANNEL > div.contGroup.channel_schedules_new.hidden-xs > div > ul > li:nth-child(1)
 while True:
     req = requests.get(server_link)
     html = req.text
     soup = BeautifulSoup(html, 'html.parser')
-    posts = soup.select('span > a')
-    href = soup.select('span > a')[0]['href']
+    posts = soup.find(id="SCHEDULE").find('div.tblType.list')
+    # SCHEDULE > div > div.tblType.list > table > tbody > tr:nth-child(1) > td:nth-child(1)
+    href = soup.select('div', 'tblType list')[0]
+    # posts = soup.select("div")
+    # href = soup.select("div")[0]
+    # SCHEDULE > div > div.tblType.list
+    #href = soup.select('tr > td')[0]['href']
     # for post in posts:
     #     print(post)
+    # SCHEDULE > div > div.tblType.list > table > tbody > tr:nth-child(1) > td.txtL
 
-    #latest_text = posts[0].text.encode('utf8')
-    latest_text = posts[0].text
-    #latest_href = server_link + '/' + href.encode('utf8')
-    latest_href = server_link + '/' + href
-
+    latest_text = posts[0].text.encode('utf8')
+    latest_href = server_link + '/' + href.encode('utf8')
     latest = latest_text + 'Link :' + latest_href
 
     with open(os.path.join(BASE_DIR, 'latest.txt'), 'r+') as f_read:
